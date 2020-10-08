@@ -2,7 +2,6 @@ package service
 
 import ContactItem
 import model.Contacts
-import model.Contacts.name
 import org.jetbrains.exposed.sql.*
 import service.DBFactory.dbQuery
 
