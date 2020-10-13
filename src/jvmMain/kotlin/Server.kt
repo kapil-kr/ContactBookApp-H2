@@ -12,38 +12,43 @@ import resources.index
 import service.ContactService
 import service.DBFactory
 
-fun main() {
-    val port = System.getenv("PORT")?.toInt()?:9090
-    DBFactory.init()
-    embeddedServer(Netty, port) {
-        install(ContentNegotiation) {
-            json()
-        }
-        install(CORS) {
-            method(HttpMethod.Get)
-            method(HttpMethod.Put)
-            method(HttpMethod.Post)
-            method(HttpMethod.Delete)
-            anyHost()
-        }
-        install(Compression) {
-            gzip()
-        }
-        install(Authentication) {
-            basic("bookAuth") {
-                realm = "ktor"
-                validate { credentials ->
-                    if (credentials.password == "kapil")
-                        UserIdPrincipal(credentials.name)
-                    else
-                        null
-                }
+fun Application.serverConfig() {
+    install(ContentNegotiation) {
+        json()
+    }
+    install(CORS) {
+        method(HttpMethod.Get)
+        method(HttpMethod.Put)
+        method(HttpMethod.Post)
+        method(HttpMethod.Delete)
+        anyHost()
+    }
+    install(Compression) {
+        gzip()
+    }
+    install(Authentication) {
+        basic("bookAuth") {
+            realm = "ktor"
+            validate { credentials ->
+                if (credentials.password == AppConfiguration.password)
+                    UserIdPrincipal(credentials.name)
+                else
+                    null
             }
         }
-        val contactService = ContactService()
-        routing {
-            index()
-            contact(contactService)
-        }
+    }
+    DBFactory.init()
+    val contactService = ContactService()
+    routing {
+        index()
+        contact(contactService)
+    }
+}
+
+fun main() {
+    val port = System.getenv("PORT")?.toInt()?:
+                AppConfiguration.port?: 9090
+    embeddedServer(Netty, port) {
+        serverConfig()
     }.start(wait = true)
 }

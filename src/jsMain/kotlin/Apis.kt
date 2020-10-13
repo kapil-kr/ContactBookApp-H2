@@ -16,14 +16,15 @@ val jsonClient = HttpClient {
         basic {
             realm ="ktor"
             sendWithoutRequest= true
+            // remove these hardcoding later
             username = "kapil"
-            password = "kapil"
+            password = "kapilApp"
         }
     }
 }
 
 suspend fun getContactList(from: Int): List<ContactItem> {
-    return jsonClient.get(endpoint + ContactItem.path + "/$from")
+    return jsonClient.get(endpoint + ContactItem.path + "?from=$from")
 }
 
 suspend fun addContactItem(cItem: ContactItem) {
@@ -45,7 +46,7 @@ suspend fun updateContactItem(cItem: ContactItem, newItem: ContactItem) {
 }
 
 suspend fun searchByName(name: String, from: Int): List<ContactItem> {
-    return jsonClient.get(endpoint + ContactItem.path + "/searchbyname/$name/$from")
+    return jsonClient.get(endpoint + ContactItem.path + "/searchbyname/$name?from=$from")
 }
 
 suspend fun searchByEmail(email: String): List<ContactItem> {

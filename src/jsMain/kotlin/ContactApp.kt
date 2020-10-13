@@ -75,7 +75,7 @@ val ContactApp = functionalComponent<RProps> { _ ->
                         +"Update"
                         attrs.onClickFunction = {
                             it.preventDefault()
-                            val cartItem = ContactItem(0, name, email)
+                            val cartItem = ContactItem(name, email)
                             scope.launch {
                                 updateContactItem(item, cartItem)
                                 setContactList(getContactList(from))
@@ -107,7 +107,7 @@ val ContactApp = functionalComponent<RProps> { _ ->
             +"Insert"
             attrs.onClickFunction = {
                 it.preventDefault()
-                val cartItem = ContactItem(0, name, email)
+                val cartItem = ContactItem( name, email)
                 scope.launch {
                     addContactItem(cartItem)
                     setContactList(getContactList(from))

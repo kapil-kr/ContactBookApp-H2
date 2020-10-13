@@ -7,15 +7,17 @@ import service.DBFactory.dbQuery
 
 class ContactService {
 
-    private fun toContact(row: ResultRow): ContactItem =
-        ContactItem(
-            id = row[Contacts.id],
-            name = row[Contacts.name],
-            email = row[Contacts.email]
+    private fun toContact(row: ResultRow): ContactItem {
+        val contactItem = ContactItem (
+                name = row[Contacts.name],
+                email = row[Contacts.email]
         )
+        contactItem.id = row[Contacts.id]
+        return contactItem
+    }
 
-    suspend fun getContacts(from: Long): List<ContactItem> = dbQuery {
-        Contacts.selectAll().limit(10, from).map {
+    suspend fun getContacts(from: Long, limit: Long): List<ContactItem> = dbQuery {
+        Contacts.selectAll().limit(limit.toInt(), from).map {
             toContact(it)
         }
     }
@@ -35,6 +37,14 @@ class ContactService {
         }
     }
 
+    suspend fun getContactById(id: Int): List<ContactItem> = dbQuery {
+        Contacts.select {
+            (Contacts.id eq id)
+        }.map {
+            toContact(it)
+        }
+    }
+
     suspend fun updateContact(id: Int, newContact: ContactItem) {
             dbQuery {
                 Contacts.update({ Contacts.id eq id }) {
@@ -44,10 +54,10 @@ class ContactService {
             }
     }
 
-    suspend fun searchByname(name: String, from:Long): List<ContactItem> = dbQuery {
+    suspend fun searchByname(name: String, from:Long, limit: Long): List<ContactItem> = dbQuery {
         Contacts.select {
             (Contacts.name eq name)
-        }.limit(10, from).map {
+        }.limit(limit.toInt(), from).map {
             toContact(it)
         }
     }
